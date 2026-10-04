@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "@/components/api";
+import { AnswerText } from "@/components/AnswerText";
 
 interface Message {
   id: string;
@@ -14,6 +15,7 @@ interface Message {
   prompt_tokens: number | null;
   completion_tokens: number | null;
   error: string | null;
+  sources: unknown[];
   created_at: string;
 }
 interface Conversation {
@@ -142,7 +144,11 @@ export default function AdminPage() {
                       {m.completion_tokens != null && <span>tokens {m.prompt_tokens}/{m.completion_tokens}</span>}
                       <button className="font-mono underline" onClick={() => showTrace(m.trace_id)}>trace {m.trace_id.slice(0, 8)}</button>
                     </div>
-                    <div className="whitespace-pre-wrap">{m.content}</div>
+                    {m.role === "assistant" ? (
+                      <AnswerText content={m.content} sources={(m.sources ?? []) as { index: number; title: string | null; location: string }[]} />
+                    ) : (
+                      <div className="whitespace-pre-wrap">{m.content}</div>
+                    )}
                     {m.error && <div className="mt-1 text-xs text-red-700">Error: {m.error}</div>}
                   </div>
                 ))}
