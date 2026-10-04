@@ -68,7 +68,7 @@ export function Chat() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col rounded-lg border bg-white shadow-sm">
+    <div className="flex h-[calc(100vh-13rem)] flex-col rounded-lg border bg-white shadow-sm">
       <div className="flex items-center justify-between border-b px-4 py-2 text-sm">
         <span className="font-medium">Ask about the ingested website / documents</span>
         <button

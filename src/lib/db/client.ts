@@ -9,6 +9,8 @@ export function db(): SupabaseClient {
     const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = config();
     client = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false, autoRefreshToken: false },
+      // Next.js patches fetch and caches GETs in its Data Cache; DB reads must always be live.
+      global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
     });
   }
   return client;
