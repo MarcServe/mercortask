@@ -13,6 +13,8 @@ const schema = z.object({
   UPLOAD_MAX_MB: z.coerce.number().min(1).max(50).default(10),
 });
 
+const DEFAULT_SUPABASE_URL = "https://oujqkygfmyapmrgxmhvt.supabase.co";
+
 export type AppConfig = z.infer<typeof schema>;
 
 let cached: AppConfig | null = null;
@@ -20,7 +22,14 @@ let cached: AppConfig | null = null;
 /** Validated server configuration. Throws a descriptive error if env is misconfigured. */
 export function config(): AppConfig {
   if (cached) return cached;
-  const parsed = schema.safeParse(process.env);
+  const env = process.env;
+  const parsed = schema.safeParse({
+    ...env,
+    // Accept the names already used by TalkWeb's Vite/Next apps; the project URL is public, so default to it.
+    SUPABASE_URL:
+      env.SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY: env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_SERVICE_KEY,
+  });
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
     throw new Error(`Invalid environment configuration: ${issues}`);
